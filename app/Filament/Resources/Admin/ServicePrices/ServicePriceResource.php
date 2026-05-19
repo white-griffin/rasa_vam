@@ -24,7 +24,7 @@ class ServicePriceResource extends Resource
 
     protected static ?string $modelLabel = 'تعرفه ';
 
-    protected static ?int $navigationSort = 4;
+    protected static ?int $navigationSort = 5;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Banknotes;
 
     public static function form(Schema $schema): Schema

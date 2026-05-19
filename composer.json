@@ -8,13 +8,14 @@
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^4.2",
-        "filament/filament": "^5.2",
+        "filament/filament": "^4.0",
         "hekmatinasser/verta": "^8.5",
         "ipe/smsir-php": "^1.0",
-        "laravel/framework": "^12.0",
+        "laravel/framework": "^11.0",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^11.1",
         "laravel/tinker": "^2.10.1",
+        "mokhosh/filament-jalali": "^5.1",
         "morilog/jalali": "^3.5",
         "teamtnt/tntsearch": "^5.0"
     },

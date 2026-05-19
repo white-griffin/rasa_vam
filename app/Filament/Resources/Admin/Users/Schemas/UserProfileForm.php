@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Admin\Users\Schemas;
 
 
 use App\Enums\GenderType;
+use App\Helpers\Format\Date;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -12,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Image;
 use Filament\Schemas\Schema;
+use Morilog\Jalali\Jalalian;
 
 class UserProfileForm
 {
@@ -23,22 +25,22 @@ class UserProfileForm
 
     public static function components(): array
     {
-        return[
+        return [
             Grid::make()
                 ->columns(3)
                 ->schema([
-                Select::make('gender')
-                    ->label('جنسیت')
-                    ->options(GenderType::labels()),
+                    Select::make('gender')
+                        ->label('جنسیت')
+                        ->options(GenderType::labels()),
 
-                TextInput::make('national_code')
-                    ->label('کد ملی'),
+                    TextInput::make('national_code')
+                        ->label('کد ملی'),
 
-                DatePicker::make('birth_date')
-                    ->jalali()
-                    ->label('تاریخ تولد'),
+                    DatePicker::make('birth_date')
+                        ->label('تاریخ تولد')
+                        ->jalali()
 
-            ]),
+                ]),
 
 
             FileUpload::make('avatar')
@@ -46,7 +48,6 @@ class UserProfileForm
                 ->directory('users/avatar')
                 ->label('عکس پروفایل')
                 ->imageEditor(),
-
 
 
         ];

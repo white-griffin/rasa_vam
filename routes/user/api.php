@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\LearningVideoController;
 use App\Http\Controllers\Api\NewsLetterController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServicePriceController;
+use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserContactController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,5 +48,15 @@ Route::controller(SearchController::class)->prefix('search')->group(function (){
     Route::get('/paginated','searchPaginated');
     Route::get('/limited','searchWithLimit');
 });
+
+
+Route::middleware('auth:sanctum')->controller(SubscriptionController::class)->group(function () {
+    Route::get('/subscription', 'index');
+    Route::get('/plans', 'plans');
+    Route::post('/subscribe', 'subscribe');
+    Route::post('/subscription/cancel', 'cancel');
+});
+
+
 
 

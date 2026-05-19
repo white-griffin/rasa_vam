@@ -56,9 +56,7 @@ class UsersTable
 
                 TextColumn::make('created_at')
                     ->label('تاریخ ثبت')
-                    ->formatStateUsing(fn ($state) =>
-                    $state ? Jalalian::fromDateTime($state)->format('Y/m/d') : null
-                    ),
+                    ->jalaliDate('Y/m/d'),
             ])
             ->filters([
                 //
