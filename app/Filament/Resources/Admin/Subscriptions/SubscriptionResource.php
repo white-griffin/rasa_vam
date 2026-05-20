@@ -23,8 +23,8 @@ class SubscriptionResource extends Resource
     protected static ?string $navigationLabel = 'اشتراک‌ها';
 
     protected static ?string $modelLabel = 'اشتراک';
-
     protected static ?string $pluralModelLabel = 'اشتراک‌ها';
+
     protected static ?int $navigationSort = 4;
 
 
