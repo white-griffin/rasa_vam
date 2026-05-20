@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('bank_id')->constrained('banks');
             $table->foreignId('city_id')->constrained('cities');
             $table->string('title');
-            $table->string('slug')->nullable();
+            $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->decimal('amount',10,8);
             $table->decimal('interest',10,8);

@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\BankServiceController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\LearningVideoController;
+use App\Http\Controllers\Api\LoanAdController;
+use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\NewsLetterController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServicePriceController;
@@ -56,6 +59,21 @@ Route::middleware('auth:sanctum')->controller(SubscriptionController::class)->gr
     Route::post('/subscribe', 'subscribe');
     Route::post('/subscription/cancel', 'cancel');
 });
+
+Route::controller(LoanAdController::class)->prefix('loan')->group(function (){
+    Route::get('/','index');
+    Route::get('/{id}','single')->middleware(['auth:sanctum','CheckSubscription']);
+    Route::post('/store','store')->middleware(['auth:sanctum']);
+});
+
+Route::controller(LocationController::class)->prefix('location')->group(function (){
+    Route::get('/cities','cities');
+});
+
+Route::controller(BankController::class)->prefix('bank')->group(function (){
+    Route::get('/','index');
+});
+
 
 
 
