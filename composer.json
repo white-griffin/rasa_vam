@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^4.2",
+        "evryn/laravel-toman": "^4.1",
         "filament/filament": "^4.0",
         "hekmatinasser/verta": "^8.5",
         "ipe/smsir-php": "^1.0",

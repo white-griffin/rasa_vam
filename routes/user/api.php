@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\LearningVideoController;
 use App\Http\Controllers\Api\LoanAdController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\NewsLetterController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServicePriceController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -72,6 +74,14 @@ Route::controller(LocationController::class)->prefix('location')->group(function
 
 Route::controller(BankController::class)->prefix('bank')->group(function (){
     Route::get('/','index');
+});
+
+Route::controller(OrderController::class)->prefix('order')->group(function (){
+    Route::get('/','index');
+});
+
+Route::controller(PaymentController::class)->prefix('payment')->group(function (){
+    Route::post('/callback','callbackGateway')->name('payment.callback');
 });
 
 

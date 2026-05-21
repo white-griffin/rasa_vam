@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Enums\LoanStatuses;
+use App\Traits\Purchaseable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LoanAd extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes,Purchaseable;
     protected $guarded = [];
 
     public function user()
@@ -23,5 +25,11 @@ class LoanAd extends Model
     public function city()
     {
         return $this->belongsTo(City::class);
+    }
+
+    protected function handlePurchaseCompletion(): void
+    {
+        $this->activity_status = LoanStatuses::ACTIVE->value;
+        $this->save();
     }
 }

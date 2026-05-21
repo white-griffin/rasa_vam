@@ -61,7 +61,7 @@ class LoanAdController extends Controller
                     'price' => request('price'),
                     'activity_status' => LoanStatuses::PENDING->value,
                 ]);
-            return ApiResponse::Success('آگهی ثبت شد و بعد از پرداخت فعال می شود');
+            return ApiResponse::Success('آگهی ثبت شد و بعد از پرداخت فعال می شود',$loan);
         }catch (\Exception $e){
             return ApiResponse::Fail(500, 'خطا درثبت آگهی');
         }
