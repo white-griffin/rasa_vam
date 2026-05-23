@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServicePriceController;
 use App\Http\Controllers\Api\SubscriptionController;
 use App\Http\Controllers\Api\UserContactController;
+use App\Http\Middleware\CheckSubscription;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(HomeController::class)->prefix('home')->group(function (){
@@ -58,14 +59,14 @@ Route::controller(SearchController::class)->prefix('search')->group(function (){
 Route::middleware('auth:sanctum')->controller(SubscriptionController::class)->group(function () {
     Route::get('/subscription', 'index');
     Route::get('/plans', 'plans');
-    Route::post('/subscribe', 'subscribe');
+//    Route::post('/subscribe', 'subscribe');
     Route::post('/subscription/cancel', 'cancel');
 });
 
 Route::controller(LoanAdController::class)->prefix('loan')->group(function (){
     Route::get('/','index');
-    Route::get('/{id}','single')->middleware(['auth:sanctum','CheckSubscription']);
-    Route::post('/store','store')->middleware(['auth:sanctum']);
+    Route::get('/{id}','single')->middleware(['auth:sanctum',CheckSubscription::class]);
+    Route::post('/','store')->middleware(['auth:sanctum']);
 });
 
 Route::controller(LocationController::class)->prefix('location')->group(function (){
@@ -76,8 +77,10 @@ Route::controller(BankController::class)->prefix('bank')->group(function (){
     Route::get('/','index');
 });
 
-Route::controller(OrderController::class)->prefix('order')->group(function (){
+Route::controller(OrderController::class)->middleware('auth:sanctum')->prefix('order')->group(function (){
     Route::get('/','index');
+    Route::get('/{id}','show');
+    Route::post('/','create')->middleware(['auth:sanctum']);
 });
 
 Route::controller(PaymentController::class)->prefix('payment')->group(function (){

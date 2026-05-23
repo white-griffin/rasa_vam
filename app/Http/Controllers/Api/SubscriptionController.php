@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ActivityStatus;
 use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Plan;
@@ -26,10 +27,8 @@ class SubscriptionController extends Controller
     public function plans()
     {
         try {
-            $plans = Plan::where('is_active', true)->get();
-            return ApiResponse::Success('عملیات موفق',[
-                'plans' => $plans
-            ]);
+            $plans = Plan::where('activity_status', ActivityStatus::ACTIVE)->get();
+            return ApiResponse::Success('عملیات موفق',$plans);
         }catch (\Exception $exception){
             return ApiResponse::Fail(500,'خطا در عملیات');
         }

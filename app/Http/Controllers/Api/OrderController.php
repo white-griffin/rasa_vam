@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Enums\OrderStatuses;
 use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\OrderResource;
 use App\Models\LoanAd;
 use App\Models\Order;
 use App\Models\Plan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
@@ -21,7 +23,15 @@ class OrderController extends Controller
                 ->latest()
                 ->paginate(15);
 
-            return ApiResponse::success('',$orders);
+            return ApiResponse::success('',[
+                'data' => OrderResource::collection($orders),
+                'pagination' => [
+                    'current_page' => $orders->currentPage(),
+                    'per_page' => $orders->perPage(),
+                    'total' => $orders->total(),
+                    'total_pages' => $orders->lastPage(),
+                ]
+            ]);
         }catch (\Exception $exception){
             return ApiResponse::Fail(500,'خطا در دریافت اطلاعات');
         }
@@ -29,9 +39,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         try {
-            abort_if($order->user_id !== auth()->id(), 403);
-
-            return ApiResponse::Success('',$order->load(['payments', 'orderable', 'user']));
+            return ApiResponse::Success('',OrderResource::make($order));
         }catch (\Exception $exception){
             return ApiResponse::Fail(500,'خطا در دریافت اطلاعات');
         }
@@ -42,7 +50,7 @@ class OrderController extends Controller
             'type' => ['required', 'in:plan,loanAd'],
             'id'   => ['required', 'integer'],
         ]);
-
+        DB::beginTransaction();
         try {
             $type = $validated['type'];
             $id = $validated['id'];
@@ -62,14 +70,20 @@ class OrderController extends Controller
                 'order_status' => OrderStatuses::PENDING->value,
                 'total_amount' => $price
             ]);
+            $payment = (new PaymentController())->sendToGateway($order);
+            DB::commit();
 
-            (new PaymentController())->sendToGateway($order);
+            return ApiResponse::success('انتقال به درگاه . . .',[
+                'pay_url' => $payment
+            ]);
         }catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollback();
             return ApiResponse::Fail(422, 'اطلاعات ورودی نامعتبر است');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollback();
             return ApiResponse::Fail(404, 'محصول یافت نشد');
         } catch (\Throwable $e) {
-            report($e);
+            DB::rollback();
             return ApiResponse::Fail(500, 'خطا در ایجاد سفارش');
         }
     }

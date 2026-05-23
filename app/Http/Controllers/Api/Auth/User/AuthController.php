@@ -101,7 +101,7 @@ class AuthController extends Controller
             $templateId = 123456; // شناسه الگو
             $parameters = [
                 [
-                    "name" => "Code",
+                    "name" => "CODE",
                     "value" => $otpCode
                 ]
             ];
