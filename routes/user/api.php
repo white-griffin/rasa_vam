@@ -58,7 +58,7 @@ Route::controller(SearchController::class)->prefix('search')->group(function (){
 
 Route::middleware('auth:sanctum')->controller(SubscriptionController::class)->group(function () {
     Route::get('/subscription', 'index');
-    Route::get('/plans', 'plans');
+    Route::get('/plans', 'plans')->withoutMiddleware('auth:sanctum');
 //    Route::post('/subscribe', 'subscribe');
     Route::post('/subscription/cancel', 'cancel');
 });

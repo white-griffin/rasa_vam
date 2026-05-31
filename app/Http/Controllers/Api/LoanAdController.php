@@ -8,14 +8,25 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\LoanAdCardResource;
 use App\Http\Resources\LoanAdsResource;
 use App\Models\LoanAd;
+use Illuminate\Http\Request;
 
 class LoanAdController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
             $loans = LoanAd::query()
                 ->where('activity_status', LoanStatuses::ACTIVE->value)
+                ->when($request->filled('city_id'), function ($q) use ($request) {
+                    $q->where('city_id', $request->integer('city_id'));
+                })
+                ->when($request->filled('bank_id'), function ($q) use ($request) {
+                    $q->where('bank_id', $request->integer('bank_id'));
+                })
+                ->when($request->filled('amount_min'), fn($q) =>
+                    $q->where('amount', '>=', $request->integer('amount_min')))
+                ->when($request->filled('amount_max'), fn($q) =>
+                    $q->where('amount', '<=', $request->integer('amount_max')))
                 ->paginate(6);
 
             return ApiResponse::Success('', [
@@ -31,6 +42,7 @@ class LoanAdController extends Controller
             return ApiResponse::Fail(500, 'خطا در دریافت اطلاعات');
         }
     }
+
 
     public function single($id)
     {
@@ -61,8 +73,8 @@ class LoanAdController extends Controller
                     'price' => request('price'),
                     'activity_status' => LoanStatuses::PENDING->value,
                 ]);
-            return ApiResponse::Success('آگهی ثبت شد و بعد از پرداخت فعال می شود',$loan);
-        }catch (\Exception $e){
+            return ApiResponse::Success('آگهی ثبت شد و بعد از پرداخت فعال می شود', $loan);
+        } catch (\Exception $e) {
             return ApiResponse::Fail(500, 'خطا درثبت آگهی');
         }
     }

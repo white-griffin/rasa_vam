@@ -12,7 +12,7 @@ class LocationController extends Controller
     {
         try {
             $cities = City::all();
-            return ApiResponse::Success($cities);
+            return ApiResponse::Success('عملیات موفق',$cities);
         }catch (\Exception $exception){
             return ApiResponse::Fail(500, 'خطا در دریافت اطلاعات');
         }
