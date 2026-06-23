@@ -20,6 +20,7 @@ class BankServiceCardResource extends JsonResource
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'image' => $this->image_url,
+            'slider_image' => $this->slider_image_url,
             'icon' => $this->icon_url,
             'slug' => $this->slug,
         ];

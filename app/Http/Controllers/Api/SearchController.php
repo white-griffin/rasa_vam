@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Services\Search\MultiModelSearchService;
 use Illuminate\Http\Request;
@@ -27,11 +28,8 @@ class SearchController extends Controller
 
         $results = $this->searchService->search($query, $perPage);
 
-        return response()->json([
-            'success' => true,
-            'query' => $query,
-            'results' => $results,
-        ]);
+        return ApiResponse::Success('', $results);
+
     }
 
     public function searchPaginated(Request $request)

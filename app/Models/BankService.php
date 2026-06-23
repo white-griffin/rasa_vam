@@ -19,7 +19,7 @@ class BankService extends Model
         'form_fields' => 'array',
     ];
 
-    protected $appends = ['image_url','icon_url'];
+    protected $appends = ['image_url','icon_url','slider_image_url'];
 
 
     public function toSearchableArray()
@@ -40,6 +40,13 @@ class BankService extends Model
     {
         return $this->image
             ? Storage::disk('public')->url($this->image)
+            : null;
+    }
+
+    public function getSliderImageUrlAttribute()
+    {
+        return $this->slider_image
+            ? Storage::disk('public')->url($this->slider_image)
             : null;
     }
 

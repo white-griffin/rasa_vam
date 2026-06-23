@@ -75,7 +75,7 @@ class BankServicesForm
 
 
                 Grid::make()
-                    ->columns()
+                    ->columns(3)
                     ->schema([
 
 
@@ -84,6 +84,11 @@ class BankServicesForm
                             ->directory('bank-services/images')
                             ->label('تصویر اصلی')
                             ->imageEditor(),
+
+                        FileUpload::make('slider_image')
+                            ->label('تصویر اسلایدر')
+                            ->directory('bank-services/slider_image')
+                            ->image(),
 
                         FileUpload::make('icon')
                             ->image()
@@ -108,6 +113,7 @@ class BankServicesForm
                             ->label('تصویر')
                             ->directory('bank-services/levels/images')
                             ->image(),
+
                     ])
                     ->collapsible() // اختیاری
                     ->defaultItems(1) // اگر خواستی حداقل یک آیتم از اول باشد

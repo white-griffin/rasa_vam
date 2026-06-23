@@ -19,6 +19,9 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('national_code')->nullable();
+            $table->foreignId('province_id')->nullable()->constrained('provinces');
+            $table->foreignId('city_id')->nullable()->constrained('cities');
+            $table->text('address')->nullable();
             $table->timestamps();
         });
     }

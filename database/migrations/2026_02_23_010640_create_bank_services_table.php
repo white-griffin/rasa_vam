@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->string('meta_description')->nullable();
             $table->string('image')->nullable();
+            $table->string('slider_image')->nullable();
             $table->string('icon')->nullable();
             $table->string('slug');
             $table->json('levels')->nullable();

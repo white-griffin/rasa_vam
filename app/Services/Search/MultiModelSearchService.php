@@ -6,72 +6,110 @@ use App\Http\Resources\BankServiceCardResource;
 use App\Http\Resources\BlogCardResource;
 use App\Models\BankService;
 use App\Models\Blog;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class MultiModelSearchService
 {
     public function search(string $query, int $perPage = 10): array
     {
-        $bankServices = BankServiceCardResource::collection(
-            BankService::search($query)->get()
-        );
-        
-        $blogs = BlogCardResource::collection(
-            Blog::search($query)->get()
-        );
+        // دریافت نتایج به صورت Collection
+        $bankItems = BankService::search($query)->get()->map(fn($item) => [
+            'type' => 'bank-service',
+            ...BankServiceCardResource::make($item)->resolve(),
+        ]);
+
+        $blogItems = Blog::search($query)->get()->map(fn($item) => [
+            'type' => 'post',
+            ...BlogCardResource::make($item)->resolve(),
+        ]);
+
+        // ترکیب دو کالکشن و یکپارچه‌سازی ایندکس‌ها
+        $items = $bankItems->concat($blogItems)->values();
 
         return [
-            'bank_services' => [
-                'data' => $bankServices,
-                'count' => $bankServices->count(),
-            ],
-            'blogs' => [
-                'data' => $blogs,
-                'count' => $blogs->count(),
-            ],
-            'total' => $bankServices->count() + $blogs->count(),
+            'data' => $items,
+            'count' => $items->count(),
         ];
     }
+
+
+
 
     public function searchPaginated(string $query, int $perPage = 10, int $page = 1): array
     {
-        $bankServices = BankService::search($query)->paginate($perPage, 'page', $page);
-        $blogs = Blog::search($query)->paginate($perPage, 'page', $page);
+        $bankServices = BankService::search($query)->get()->map(function ($item) {
+            return [
+                'type' => 'bank-service',
+                ...BankServiceCardResource::make($item)->resolve(),
+            ];
+        });
+
+        $blogs = Blog::search($query)->get()->map(function ($item) {
+            return [
+                'type' => 'post',
+                ...BlogCardResource::make($item)->resolve(),
+            ];
+        });
+
+        $items = $bankServices
+            ->concat((array)$blogs)
+            ->values();
+
+        $total = $items->count();
+
+        $paginatedItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
+
+        $paginator = new LengthAwarePaginator(
+            $paginatedItems,
+            $total,
+            $perPage,
+            $page,
+            [
+                'path' => request()->url(),
+                'query' => request()->query(),
+            ]
+        );
 
         return [
-            'bank_services' => [
-                'data' => BankServiceCardResource::collection($bankServices->items()),
-                'total' => $bankServices->total(),
-                'per_page' => $bankServices->perPage(),
-                'current_page' => $bankServices->currentPage(),
-                'last_page' => $bankServices->lastPage(),
-            ],
-            'blogs' => [
-                'data' => BlogCardResource::collection($blogs->items()),
-                'total' => $blogs->total(),
-                'per_page' => $blogs->perPage(),
-                'current_page' => $blogs->currentPage(),
-                'last_page' => $blogs->lastPage(),
-            ],
+            'data' => $paginator->items(),
+            'total' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
         ];
     }
+
 
     public function searchWithLimit(string $query, int $bankServicesLimit = 5, int $blogsLimit = 5): array
     {
-        $bankServices = BankServiceCardResource::collection(
-            BankService::search($query)
-                ->take($bankServicesLimit)
-                ->get()
-        );
-        $blogs = BlogCardResource::collection(
-            Blog::search($query)
-                ->take($blogsLimit)
-                ->get()
-        );
+        $bankServices = BankService::search($query)
+            ->take($bankServicesLimit)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'type' => 'bank-service',
+                    ...BankServiceCardResource::make($item)->resolve(),
+                ];
+            });
+
+        $blogs = Blog::search($query)
+            ->take($blogsLimit)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'type' => 'post',
+                    ...BlogCardResource::make($item)->resolve(),
+                ];
+            });
+
+        $items = $bankServices
+            ->concat((array)$blogs)
+            ->values();
 
         return [
-            'bank_services' => $bankServices,
-            'blogs' => $blogs,
-            'total' => $bankServices->count() + $blogs->count(),
+            'data' => $items,
+            'total' => $items->count(),
         ];
     }
+
 }

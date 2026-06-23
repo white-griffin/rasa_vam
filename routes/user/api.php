@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\NewsLetterController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ServicePriceController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -19,6 +20,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(HomeController::class)->prefix('home')->group(function (){
     Route::get('/','index');
+});
+
+Route::controller(ProfileController::class)->middleware('auth:sanctum')->group(function () {
+    Route::get('profile', 'getProfile');
+    Route::post('profile', 'updateProfile');
 });
 
 Route::controller(BankServiceController::class)->prefix('bank-service')->group(function (){
@@ -70,6 +76,7 @@ Route::controller(LoanAdController::class)->prefix('loan')->group(function (){
 });
 
 Route::controller(LocationController::class)->prefix('location')->group(function (){
+    Route::get('/provinces','provinces');
     Route::get('/cities','cities');
 });
 

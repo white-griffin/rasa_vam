@@ -13,10 +13,10 @@ class UserContactController extends Controller
 
         try {
             UserContact::query()->create([
-                'name' => request('name'),
+                'name' => request('fullname'),
                 'mobile' => request('mobile'),
-                'subject' => request('subject'),
-                'message' => request('message'),
+                'subject' => request('title'),
+                'message' => request('content'),
             ]);
 
             return ApiResponse::Success('پیام با موفقیت ارسال شد');

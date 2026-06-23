@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class BankServiceResource extends JsonResource
 {
@@ -22,10 +23,17 @@ class BankServiceResource extends JsonResource
             'meta_title' => $this->meta_title,
             'meta_description' => $this->meta_description,
             'image' => $this->image_url,
+            'slider_image' => $this->slider_image_url,
             'icon' => $this->icon_url,
             'slug' => $this->slug,
             'prices' => $this->prices->makeHidden(['created_at', 'updated_at']),
-            'levels' => $this->levles,
+            'levels' => collect($this->levels)->map(function ($level) {
+                return [
+                    'title'       => $level['title'],
+                    'image'       => $level['image'] ?Storage::disk('public')->url($level['image']): null,
+                    'description' => $level['description'],
+                ];
+            }),
             'form_fields' => $this->getFormFieldsAttribute($this->form_fields),
             'faqs' => FaqResource::collection($this->faqs)
         ];

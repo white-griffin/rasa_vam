@@ -6,7 +6,9 @@ use App\Constants\Constant;
 use App\Enums\ActivityStatus;
 use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserProfileResource;
 use App\Models\User;
+use App\Models\UserProfile;
 use Exception;
 use Illuminate\Http\Request;
 use Ipe\Sdk\Facades\SmsIr;
@@ -17,7 +19,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'mobile' => 'required|numeric|min:7',
-        ],[
+        ], [
             'mobile.required' => 'شماره تماس را وارد کنید',
             'mobile.min' => 'شماره تماس را کامل وارد کنید',
             'mobile.numeric' => 'فرمت شماره تلفن صحیح نیست ',
@@ -27,25 +29,25 @@ class AuthController extends Controller
             $user = User::firstOrCreate(
                 [
                     'mobile' => request('mobile')
-                ],[
+                ], [
                     'mobile' => request('mobile')
                 ]
             );
 
-            $otp_code = mt_rand(1000, 9999);
+            $otp_code = mt_rand(100000, 999999);
             $user->update(['otp_code' => $otp_code]);
             $user->tokens()->delete();
             $sendOtp = $this->sendOtp($user->mobile, $otp_code);
-            if ($sendOtp['code'] != 1){
+            if ($sendOtp['code'] != 1) {
 
-                return ApiResponse::Fail(501,'خطا در ارسال کد'
-                    ,$sendOtp);
+                return ApiResponse::Fail(501, 'خطا در ارسال کد'
+                    , $sendOtp);
             }
 
             return ApiResponse::Success('رمز ارسال شد');
 
-        }catch (\Exception $exception){
-            return ApiResponse::Fail(500,'خطا در برقراری ارتباط');
+        } catch (\Exception $exception) {
+            return ApiResponse::Fail(500, 'خطا در برقراری ارتباط');
         }
 
     }
@@ -55,7 +57,7 @@ class AuthController extends Controller
         $request->validate([
             'mobile' => 'required',
             'otp_code' => 'required',
-        ],[
+        ], [
             'otp_code.required' => 'وارد کردن کد تایید الزامی است ',
         ]);
 
@@ -63,23 +65,28 @@ class AuthController extends Controller
 
             $user = User::whereMobile(request('mobile'))->first();
 
-            if ($user->otp_code == request('otp_code')){
+            if ($user->otp_code == request('otp_code')) {
                 $user->activity_status = ActivityStatus::ACTIVE->value;
                 $user->save();
                 $user->tokens()->delete();
 
+                $profile = UserProfile::query()
+                    ->firstOrCreate([
+                        'user_id' => $user->id
+                    ]);
                 return ApiResponse::Success('با موفقیت وارد شدید',
                     [
                         'token' => $user->createToken("API TOKEN")->plainTextToken,
+                        'profile' => UserProfileResource::make($profile),
                     ]);
 
 
-            }else{
-                return ApiResponse::Fail(403,'کد تایید صحیح نیست');
+            } else {
+                return ApiResponse::Fail(403, 'کد تایید صحیح نیست');
 
             }
-        }catch (\Exception $exception){
-            return ApiResponse::Fail(500,$exception->getMessage());
+        } catch (\Exception $exception) {
+            return ApiResponse::Fail(500, $exception->getMessage());
         }
     }
 
@@ -90,15 +97,16 @@ class AuthController extends Controller
             return ApiResponse::Success('با موفقیت خارج شدید');
 
         } catch (Exception $e) {
-            return ApiResponse::Fail(500,$e->getMessage());
+            return ApiResponse::Fail(500, $e->getMessage());
         }
     }
 
-    private function sendOtp($mobile,$otpCode)
+    private function sendOtp($mobile, $otpCode)
     {
 
         try {
-            $templateId = 123456; // شناسه الگو
+            $lineNumber = "9982008664";
+            $templateId = 595494; // شناسه الگو
             $parameters = [
                 [
                     "name" => "CODE",
@@ -112,7 +120,7 @@ class AuthController extends Controller
                 'code' => $response->status,
                 'message' => $response->message,
             ];
-        }catch (\Exception $exception){
+        } catch (\Exception $exception) {
             return [
                 'code' => $exception->getCode(),
                 'message' => $exception->getMessage()
