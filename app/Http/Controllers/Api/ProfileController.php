@@ -32,11 +32,7 @@ class ProfileController extends Controller
         DB::beginTransaction();
         try {
             $profile->update($data);
-            $user->update([
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'email' => $data['email'],
-            ]);
+            $user->update($data);
             DB::commit();
 
             return ApiResponse::Success('عملیات موفق');

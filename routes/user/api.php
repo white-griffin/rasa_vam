@@ -23,9 +23,10 @@ Route::controller(HomeController::class)->prefix('home')->group(function () {
     Route::get('/', 'index');
 });
 
-Route::controller(ProfileController::class)->middleware('auth:sanctum')->group(function () {
-    Route::get('profile', 'getProfile');
-    Route::post('profile', 'updateProfile');
+Route::controller(ProfileController::class)
+    ->prefix('profile')->middleware('auth:sanctum')->group(function () {
+    Route::get('/', 'getProfile');
+    Route::post('/', 'updateProfile');
 });
 
 Route::controller(BankServiceController::class)->prefix('bank-service')->group(function () {
