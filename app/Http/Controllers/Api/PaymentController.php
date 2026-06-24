@@ -20,7 +20,7 @@ class PaymentController extends Controller
         DB::beginTransaction();
         try {
             $request = Toman::amount($order->total_amount)
-                ->description($order->orderable->title.' خرید ')
+                ->description($order->orderable->title.' خرید : ')
                 ->callback(route('payment.callback'))
                 ->request();
 
@@ -37,19 +37,27 @@ class PaymentController extends Controller
 
                 DB::commit();
                 // Redirect to payment URL
-                return $request->pay()->getTargetUrl();
+                return [
+                    'success' => true,
+                    'url' => $request->pay()->getTargetUrl(),
+                ];
             }
 
             DB::commit();
             if ($request->failed()) {
                 // Handle transaction request failure.
-                return $request->getMessage();
-
+                return [
+                    'success' => false,
+                    'message' => $request->message(),
+                ];
             }
 
         }catch (\Exception $exception){
             DB::rollBack();
-            return $exception;
+            return [
+                'success' => false,
+                'message' => $exception->getMessage(),
+            ];
         }
     }
 

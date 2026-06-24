@@ -26,7 +26,8 @@ class PlanResource extends Resource
 
     protected static ?string $modelLabel = 'طرح اشتراک ';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 4;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::Sparkles;
 
     protected static ?string $recordTitleAttribute = 'Plan';

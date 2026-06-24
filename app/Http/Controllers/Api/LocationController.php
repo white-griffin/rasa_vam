@@ -13,17 +13,23 @@ class LocationController extends Controller
     {
         try {
             $provinces = Province::all();
-            return ApiResponse::Success('عملیات موفق',$provinces);
-        }catch (\Exception $exception){
+            return ApiResponse::Success('عملیات موفق', $provinces);
+        } catch (\Exception $exception) {
             return ApiResponse::Fail(500, 'خطا در دریافت اطلاعات');
         }
     }
+
     public function cities()
     {
         try {
-            $cities = City::query()->where('province', request('province_id'))->get();
-            return ApiResponse::Success('عملیات موفق',$cities);
-        }catch (\Exception $exception){
+            $cities = City::query()
+                ->when(
+                    request('province_id'), fn($q) =>
+                    $q->where('province', request('province_id'))
+                )
+                ->get();
+            return ApiResponse::Success('عملیات موفق', $cities);
+        } catch (\Exception $exception) {
             return ApiResponse::Fail(500, 'خطا در دریافت اطلاعات');
         }
     }

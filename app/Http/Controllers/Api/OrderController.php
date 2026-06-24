@@ -6,6 +6,7 @@ use App\Enums\OrderStatuses;
 use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
+use App\Models\BankServiceRequest;
 use App\Models\LoanAd;
 use App\Models\Order;
 use App\Models\Plan;
@@ -47,7 +48,7 @@ class OrderController extends Controller
 
     public function create(){
         $validated = \request()->validate([
-            'type' => ['required', 'in:plan,loanAd'],
+            'type' => ['required', 'in:plan,loan_ad,bank_service_request'],
             'id'   => ['required', 'integer'],
         ]);
         DB::beginTransaction();
@@ -57,10 +58,15 @@ class OrderController extends Controller
 
             $product = match ($type) {
                 'plan' => Plan::query()->findOrFail($id),
-                'loanAd' => LoanAd::query()->findOrFail($id),
+                'loan_ad' => LoanAd::query()->findOrFail($id),
+                'bank_service_request' => BankServiceRequest::query()->findOrFail($id),
             };
 
-            $price = $type === 'plan' ? $product->price : 5000;
+            $price = match ($type) {
+                'plan' => $product->price,
+                'loan_ad' => 5000,
+                'bank_service_request' => $product->bank_service_price_amount,
+            };
 
             $order = Order::query()->create([
                 'user_id' => auth()->id(),
@@ -71,11 +77,16 @@ class OrderController extends Controller
                 'total_amount' => $price
             ]);
             $payment = (new PaymentController())->sendToGateway($order);
-            DB::commit();
+            if ($payment['success']){
+                DB::commit();
+                return ApiResponse::success('انتقال به درگاه . . .',[
+                    'pay_url' => $payment['url']
+                ]);
+            }else{
+                DB::rollback();
+                return ApiResponse::Fail(422, 'خطا در اتصال به درگاه');
+            }
 
-            return ApiResponse::success('انتقال به درگاه . . .',[
-                'pay_url' => $payment
-            ]);
         }catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollback();
             return ApiResponse::Fail(422, 'اطلاعات ورودی نامعتبر است');
@@ -84,6 +95,7 @@ class OrderController extends Controller
             return ApiResponse::Fail(404, 'محصول یافت نشد');
         } catch (\Throwable $e) {
             DB::rollback();
+
             return ApiResponse::Fail(500, 'خطا در ایجاد سفارش');
         }
     }

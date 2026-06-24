@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\BankServiceController;
+use App\Http\Controllers\Api\BankServiceRequestController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\LearningVideoController;
@@ -18,8 +19,8 @@ use App\Http\Controllers\Api\UserContactController;
 use App\Http\Middleware\CheckSubscription;
 use Illuminate\Support\Facades\Route;
 
-Route::controller(HomeController::class)->prefix('home')->group(function (){
-    Route::get('/','index');
+Route::controller(HomeController::class)->prefix('home')->group(function () {
+    Route::get('/', 'index');
 });
 
 Route::controller(ProfileController::class)->middleware('auth:sanctum')->group(function () {
@@ -27,38 +28,38 @@ Route::controller(ProfileController::class)->middleware('auth:sanctum')->group(f
     Route::post('profile', 'updateProfile');
 });
 
-Route::controller(BankServiceController::class)->prefix('bank-service')->group(function (){
-    Route::get('/','index');
-    Route::get('/{slug}','single');
+Route::controller(BankServiceController::class)->prefix('bank-service')->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{slug}', 'single');
 });
 
-Route::controller(BlogController::class)->prefix('blog')->group(function (){
-    Route::get('/','index');
-    Route::get('/{slug}','single');
+Route::controller(BlogController::class)->prefix('blog')->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{slug}', 'single');
 });
 
-Route::controller(LearningVideoController::class)->prefix('learning-video')->group(function (){
-    Route::get('/','index');
+Route::controller(LearningVideoController::class)->prefix('learning-video')->group(function () {
+    Route::get('/', 'index');
 });
 
-Route::controller(ServicePriceController::class)->prefix('service-prices')->group(function (){
-    Route::get('/','index');
+Route::controller(ServicePriceController::class)->prefix('service-prices')->group(function () {
+    Route::get('/', 'index');
 });
 
-Route::controller(UserContactController::class)->prefix('contact')->group(function (){
-    Route::post('/create','create');
+Route::controller(UserContactController::class)->prefix('contact')->group(function () {
+    Route::post('/create', 'create');
 });
 
-Route::controller(NewsLetterController::class)->prefix('news-letter')->group(function (){
-    Route::post('/subscribe','subscribe');
+Route::controller(NewsLetterController::class)->prefix('news-letter')->group(function () {
+    Route::post('/subscribe', 'subscribe');
 
-    Route::post('/un-subscribe','unSubscribe');
+    Route::post('/un-subscribe', 'unSubscribe');
 });
 
-Route::controller(SearchController::class)->prefix('search')->group(function (){
-    Route::get('/','search');
-    Route::get('/paginated','searchPaginated');
-    Route::get('/limited','searchWithLimit');
+Route::controller(SearchController::class)->prefix('search')->group(function () {
+    Route::get('/', 'search');
+    Route::get('/paginated', 'searchPaginated');
+    Route::get('/limited', 'searchWithLimit');
 });
 
 
@@ -69,32 +70,37 @@ Route::middleware('auth:sanctum')->controller(SubscriptionController::class)->gr
     Route::post('/subscription/cancel', 'cancel');
 });
 
-Route::controller(LoanAdController::class)->prefix('loan')->group(function (){
-    Route::get('/','index');
-    Route::get('/{id}','single')->middleware(['auth:sanctum',CheckSubscription::class]);
-    Route::post('/','store')->middleware(['auth:sanctum']);
+Route::controller(LoanAdController::class)->prefix('loan')->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{id}', 'single')->middleware(['auth:sanctum', CheckSubscription::class]);
+    Route::post('/', 'store')->middleware(['auth:sanctum']);
 });
 
-Route::controller(LocationController::class)->prefix('location')->group(function (){
-    Route::get('/provinces','provinces');
-    Route::get('/cities','cities');
+Route::controller(LocationController::class)->prefix('location')->group(function () {
+    Route::get('/provinces', 'provinces');
+    Route::get('/cities', 'cities');
 });
 
-Route::controller(BankController::class)->prefix('bank')->group(function (){
-    Route::get('/','index');
+Route::controller(BankController::class)->prefix('bank')->group(function () {
+    Route::get('/', 'index');
 });
 
-Route::controller(OrderController::class)->middleware('auth:sanctum')->prefix('order')->group(function (){
-    Route::get('/','index');
-    Route::get('/{id}','show');
-    Route::post('/','create')->middleware(['auth:sanctum']);
+Route::controller(OrderController::class)->middleware('auth:sanctum')->prefix('order')->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{id}', 'show');
+    Route::post('/', 'create')->middleware(['auth:sanctum']);
 });
 
-Route::controller(PaymentController::class)->prefix('payment')->group(function (){
-    Route::post('/callback','callbackGateway')->name('payment.callback');
+Route::controller(PaymentController::class)->prefix('payment')->group(function () {
+    Route::post('/callback', 'callbackGateway')->name('payment.callback');
 });
 
+Route::controller(BankServiceRequestController::class)->middleware('auth:sanctum')
+    ->prefix('bank-service-request')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'create');
 
+    });
 
 
 
