@@ -38,7 +38,7 @@ class HomeController extends Controller
     {
         return BlogCardResource::collection(
             Blog::where('activity_status',ActivityStatus::ACTIVE->value)
-                ->orderBy('created_at','desc')->take(8)->get()
+                ->orderBy('created_at','desc')->take(3)->get()
         );
     }
 }

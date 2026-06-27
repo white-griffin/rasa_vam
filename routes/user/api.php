@@ -27,6 +27,8 @@ Route::controller(ProfileController::class)
     ->prefix('profile')->middleware('auth:sanctum')->group(function () {
     Route::get('/', 'getProfile');
     Route::post('/', 'updateProfile');
+
+    Route::get('/loans', 'loans');
 });
 
 Route::controller(BankServiceController::class)->prefix('bank-service')->group(function () {

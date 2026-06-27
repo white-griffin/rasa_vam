@@ -59,6 +59,11 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
     }
 
+    public function loans()
+    {
+        return $this->hasMany(LoanAd::class);
+    }
+
     public function activeSubscription()
     {
         return $this->hasOne(Subscription::class)

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Enums\GenderType;
 use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\LoanAdsResource;
 use App\Http\Resources\UserProfileResource;
+use App\Models\LoanAd;
 use App\Services\MediaService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,7 @@ class ProfileController extends Controller
             $user = auth()->user();
             return ApiResponse::Success('عملیات موفق', UserProfileResource::make($user->profile));
         } catch (\Exception $exception) {
+            dd($exception->getMessage());
             return ApiResponse::Fail(Response::HTTP_INTERNAL_SERVER_ERROR, 'خطا در عملیات');
         }
     }
@@ -42,7 +45,6 @@ class ProfileController extends Controller
         }
     }
 
-
     private function profileData($profile)
     {
         $media = app(MediaService::class);
@@ -55,6 +57,9 @@ class ProfileController extends Controller
             'gender' => ['nullable', Rule::in(array_map(fn (GenderType $type) => $type->value, GenderType::cases()))],
             'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'address' => ['nullable'],
+            'province_id' => ['nullable'],
+            'city_id' => ['nullable'],
+
         ], [
             'email.email' => 'فرمت ایمیل صحیح نیست',
             'email.unique' => 'این ایمیل قبلا ثبت شده است',
@@ -79,5 +84,17 @@ class ProfileController extends Controller
             );
         }
         return $data;
+    }
+
+    public function loans()
+    {
+        try {
+            $loans = LoanAdsResource::collection(
+              auth()->user()->loans
+            );
+            return ApiResponse::Success('عملیات موفق',$loans);
+        }catch (\Exception $exception){
+            return ApiResponse::Fail(Response::HTTP_INTERNAL_SERVER_ERROR, $exception->getMessage());
+        }
     }
 }

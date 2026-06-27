@@ -20,12 +20,14 @@ class UserProfileResource extends JsonResource
             'national_code' => $this->national_code,
             'province' => !is_null($this->province_id) ? [
                 'id' => $this->province->id,
-                'name' => $this->province->fa_name
+                'name' => $this->province->name
             ] : null,
             'city' => !is_null($this->city_id) ?[
                 'id' => $this->city->id,
-                'name' => $this->city->fa_name
+                'name' => $this->city->name
             ] : null,
+            'subscription' => SubscriptionResource::make($this->user->activeSubscription),
+
         ];
     }
 }
