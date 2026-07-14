@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\BankController;
 use App\Http\Controllers\Api\BankServiceController;
 use App\Http\Controllers\Api\BankServiceRequestController;
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\LearningVideoController;
 use App\Http\Controllers\Api\LoanAdController;
@@ -99,6 +100,10 @@ Route::controller(PaymentController::class)->prefix('payment')->group(function (
     Route::post('/omidpay/callback', 'callbackOmidPay')->name('payment.omidpay.callback');
 });
 
+Route::controller(CategoryController::class)->prefix('categories')->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{category}', 'show');
+});
 
 Route::controller(BankServiceRequestController::class)->middleware('auth:sanctum')
     ->prefix('bank-service-request')->group(function () {

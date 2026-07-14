@@ -21,6 +21,11 @@ class BankServicesForm
                 Grid::make()
                     ->columns(3)
                     ->schema([
+                        Select::make('category_id')
+                            ->label('دسته بندی')
+                            ->relationship('category', 'title')
+                            ->required(),
+
                         TextInput::make('title')
                             ->label('عنوان خدمت')
                             ->required(),

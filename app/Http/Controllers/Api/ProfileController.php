@@ -21,7 +21,6 @@ class ProfileController extends Controller
             $user = auth()->user();
             return ApiResponse::Success('عملیات موفق', UserProfileResource::make($user->profile));
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
             return ApiResponse::Fail(Response::HTTP_INTERNAL_SERVER_ERROR, 'خطا در عملیات');
         }
     }

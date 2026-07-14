@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Resources\Admin\BankServices\Tables;
+namespace App\Filament\Resources\Admin\Categories\Tables;
 
 use App\Enums\ActivityStatus;
+use App\Enums\CategoryTypes;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -14,30 +14,28 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 
-class BankServicesTable
+class CategoriesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->reorderable('sort_order')
             ->columns([
                 ImageColumn::make('image')
                     ->label('تصویر')
-                    ->square() // اگر مربعی می‌خوای
-                    ->height(50) // کنترل سایز
-                    ->rounded(), // گوشه‌های گرد
-
-                TextColumn::make('category.title')
-                    ->label('دسته بندی'),
-
+                    ->square(),
+                TextColumn::make('parent.title')
+                    ->label('والد')
+                    ->searchable(),
                 TextColumn::make('title')
                     ->label('عنوان')
                     ->searchable(),
-
                 TextColumn::make('slug')
                     ->label('اسلاگ')
                     ->searchable(),
-
+                TextColumn::make('type')
+                    ->label('نوع')
+                    ->formatStateUsing(fn ($state) => CategoryTypes::label($state))
+                    ->sortable(),
                 TextColumn::make('activity_status')
                     ->label('وضعیت')
                     ->formatStateUsing(fn ($state) => ActivityStatus::label((string) $state) ?? '—')
@@ -46,17 +44,21 @@ class BankServicesTable
                         'success'   => fn ($record) => (string) $record->activity_status === ActivityStatus::ACTIVE->value,
                         'danger' => fn ($record) => (string) $record->activity_status === ActivityStatus::INACTIVE->value,
                     ]),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
-
             ->filters([
                 TrashedFilter::make(),
             ])
-
             ->recordActions([
                 EditAction::make(),
-                DeleteAction::make()
             ])->recordActionsColumnLabel('عملیات')
-
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

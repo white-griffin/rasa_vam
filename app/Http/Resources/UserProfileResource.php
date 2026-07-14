@@ -26,6 +26,7 @@ class UserProfileResource extends JsonResource
                 'id' => $this->city->id,
                 'name' => $this->city->name
             ] : null,
+            'address' => $this->address,
             'subscription' => SubscriptionResource::make($this->user->activeSubscription),
 
         ];

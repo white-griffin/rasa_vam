@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('bank_services', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->text('short_description')->nullable();
             $table->string('description_title');
             $table->text('description_text')->nullable();
