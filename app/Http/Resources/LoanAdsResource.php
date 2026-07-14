@@ -31,6 +31,7 @@ class LoanAdsResource extends JsonResource
             'amount' => $this->amount,
             'interest' => $this->intereset,
             'price' => $this->price,
+            'status' => $this->activity_status,
             'created_at' => Verta::instance($this->created_at)->format('d F Y')
         ];
     }

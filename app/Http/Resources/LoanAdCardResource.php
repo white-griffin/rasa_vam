@@ -25,6 +25,7 @@ class LoanAdCardResource extends JsonResource
             'description' => Str::limit(strip_tags($this->description), 100),
             'amount' => $this->amount,
             'price' => $this->price,
+            'status' => $this->activity_status,
             'created_at' => Verta::instance($this->created_at)->format('d F Y')
         ];
     }

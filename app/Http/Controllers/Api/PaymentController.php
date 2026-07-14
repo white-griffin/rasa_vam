@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ActivityStatus;
 use App\Enums\BankServiceRequestStatuses;
 use App\Enums\LoanStatuses;
 use App\Enums\OrderStatuses;
@@ -96,11 +97,11 @@ class PaymentController extends Controller
                 $paymentRecord->update([
                     'reference_id' => $refId,
                     'payment_status' => OrderStatuses::PAID->value,
-                    'paid_at' => now()->timestamp,
+                    'paid_at' => now(),
                 ]);
                 $paymentRecord->order->update([
                     'order_status' => OrderStatuses::PAID->value,
-                    'paid_at' => now()->timestamp,
+                    'paid_at' => now(),
                 ]);
 
                 $paymentRecord->order->orderable->purchaseCompleted();
@@ -152,7 +153,7 @@ class PaymentController extends Controller
             "MerchatGoodReferenceID" => "111",
             "MobileNo" => $order->user->mobile,
             "Email" => $order->user->email ?? "mohamadamin.zanguee@rasavam.com",
-            "RedirectUrl" => 'https://rasavam.com/payment'
+            "RedirectUrl" => route('payment.omidpay.callback')
         ];
 
         DB::beginTransaction();
@@ -230,7 +231,7 @@ class PaymentController extends Controller
                 $payment->update([
                     'reference_id' => $request->RefNum,
                     'gateway_response' => $request->all(),
-                    'paid_at' => now()->timestamp
+                    'paid_at' => now()
                 ]);
                 DB::commit();
 
@@ -238,14 +239,15 @@ class PaymentController extends Controller
                 if ($verify){
 
                     match ($payment->order->orderable_type) {
-                        'App\Models\LoanAd'   => $this->handleLoanAd($payment->order->orderable),
-                        'App\Models\Plan'   => $this->handlePlan($payment->order->orderable),
-                        'App\Models\BankServiceRequest'  => $this->handleServiceRequest($payment->order->orderable),
-                        default       => throw new \InvalidArgumentException("محصول پشتیبانی نمیشود"),
+                        \App\Models\LoanAd::class => $this->handleLoanAd($payment->order->orderable),
+                        \App\Models\Plan::class => $this->handlePlan($payment->order->orderable),
+                        \App\Models\BankServiceRequest::class => $this->handleServiceRequest($payment->order->orderable),
+                        default => throw new \InvalidArgumentException('محصول پشتیبانی نمی‌شود'),
                     };
 
                     return view('user.payments.success-pay');
                 }else{
+
                     return view('user.payments.failed-pay');
                 }
             }else{
@@ -265,7 +267,7 @@ class PaymentController extends Controller
     }
     public function verifyOmidPay($refNum,$token)
     {
-        $url = 'http://ref.sayancard.ir/ref-payment/RestServices/mts/verifyMerchantTrans/';
+        $url = 'https://ref.omidpayment.ir/ref-payment/RestServices/mts/verifyMerchantTrans/';
 
         $data = [
             "WSContext" => [
@@ -297,7 +299,7 @@ class PaymentController extends Controller
 
                 $payment->order()->update([
                     'order_status' => OrderStatuses::PAID->value,
-                    'paid_at' => now()->timestamp
+                    'paid_at' => now()
                 ]);
 
                 DB::commit();
@@ -323,6 +325,7 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
+
             return false;
         }
     }
@@ -330,32 +333,51 @@ class PaymentController extends Controller
 
     private function handleLoanAd($product)
     {
-        $product->update([
-            'activity_status' => LoanStatuses::ACTIVE->value,
-        ]);
+        try {
+
+            $product->update([
+                'activity_status' => LoanStatuses::ACTIVE->value,
+            ]);
+        }catch (\Exception $e){
+            dd($e);
+        }
     }
 
     private function handlePlan($product)
     {
-        if ($active = auth()->user()->activeSubscription) {
-            $active->cancel();
+        try {
+            if ($active = auth()->user()->activeSubscription) {
+                $active->cancel();
+            }
+
+            $subscription = Subscription::query()
+                ->create([
+                    'user_id' => auth()->user()->id,
+                    'plan_id' => $product->id,
+                    'starts_at' => now(),
+                    'ends_at' => now()->addDays($product->duration_days),
+                    'status' => ActivityStatus::ACTIVE->value,
+                ]);
+        }catch (\Exception $e){
+            dd($e);
         }
 
-        $subscription = Subscription::query()
-            ->create([
-                'user_id' => auth()->user()->id,
-                'plan_id' => $product->id,
-                'starts_at' => now(),
-                'ends_at' => now()->addDays($product->duration_days),
-                'status' => 'active'
-            ]);
     }
 
     private function handleServiceRequest($product)
     {
-        $product->update([
-            'status' => BankServiceRequestStatuses::IN_REVIEW->value,
-        ]);
+        try {
+            if ($active = auth()->user()->activeSubscription) {
+                $active->cancel();
+            }
+
+            $product->update([
+                'status' => BankServiceRequestStatuses::IN_REVIEW->value,
+            ]);
+        }catch (\Exception $e){
+            dd($e);
+        }
+
     }
 
 
