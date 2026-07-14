@@ -22,12 +22,6 @@ class BlogForm
                         TextInput::make('title')
                             ->label('عنوان ')
                             ->required(),
-
-                        TextInput::make('slug')
-                            ->label('اسلاگ')
-                            ->required(),
-
-
                     ])->columnSpanFull(),
 
                 Grid::make()

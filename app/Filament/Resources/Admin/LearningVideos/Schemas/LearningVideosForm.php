@@ -23,10 +23,6 @@ class LearningVideosForm
                             ->label('عنوان ')
                             ->required(),
 
-                        TextInput::make('slug')
-                            ->label('اسلاگ')
-                            ->required(),
-
                         Radio::make('activity_status')
                             ->label('وضعیت')
                             ->options(ActivityStatus::labels())

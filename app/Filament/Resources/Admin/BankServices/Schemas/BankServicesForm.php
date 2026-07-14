@@ -25,10 +25,6 @@ class BankServicesForm
                             ->label('عنوان خدمت')
                             ->required(),
 
-                        TextInput::make('slug')
-                            ->label('اسلاگ')
-                            ->required(),
-
                         Textarea::make('short_description')
                             ->label('توضیح کوتاه')
                             ->required(),

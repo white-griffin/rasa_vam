@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\SlugService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,17 @@ class Blog extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function ($blog) {
+
+            if (!$blog->slug && $blog->title) {
+                $blog->slug = app(SlugService::class)
+                    ->generate($blog);
+            }
+
+        });
+    }
     public function searchableAs()
     {
         return 'blogs';

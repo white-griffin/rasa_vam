@@ -18,6 +18,7 @@ class BlogController extends Controller
         try {
             $blogs = Blog::query()
                 ->where('activity_status', ActivityStatus::ACTIVE->value)
+                ->orderBy('created_at','desc')
                 ->paginate(6); // خودش page رو از query string میخونه
 
             return ApiResponse::Success('', [

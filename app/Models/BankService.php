@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\SlugService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,6 +23,17 @@ class BankService extends Model
     protected $appends = ['image_url','icon_url','slider_image_url'];
 
 
+    protected static function booted(): void
+    {
+        static::saving(function ($service) {
+
+            if (!$service->slug && $service->title) {
+                $service->slug = app(SlugService::class)
+                    ->generate($service);
+            }
+
+        });
+    }
     public function toSearchableArray()
     {
         return [

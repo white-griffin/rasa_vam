@@ -21,11 +21,6 @@ class PlanForm
                             ->label('عنوان')
                             ->required(),
 
-                        TextInput::make('slug')
-                            ->label('اسلاگ')
-                            ->required()
-                            ->unique(ignoreRecord: true),
-
                         Textarea::make('description')->label('توضیحات'),
                     ])->columnSpanFull(),
 
