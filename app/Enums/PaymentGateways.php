@@ -8,10 +8,12 @@ enum PaymentGateways: string implements Contracts\EnumContractInterface
 {
     case ZARINPAL = '1';
 
+    case OMIDPAY = '2';
     public static function labels(): array
     {
         return [
             self::ZARINPAL->value => 'زرین پال',
+            self::OMIDPAY->value => 'امیدپی',
         ];
     }
 
@@ -19,6 +21,7 @@ enum PaymentGateways: string implements Contracts\EnumContractInterface
     {
         return [
             self::ZARINPAL->value => 'zarinpal',
+            self::ZARINPAL->value => 'omidpay',
         ];
     }
 

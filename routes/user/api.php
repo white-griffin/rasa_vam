@@ -95,8 +95,10 @@ Route::controller(OrderController::class)->middleware('auth:sanctum')->prefix('o
 });
 
 Route::controller(PaymentController::class)->prefix('payment')->group(function () {
-    Route::post('/callback', 'callbackGateway')->name('payment.callback');
+    Route::post('/zarinpal/callback', 'callbackZarinpalGateway')->name('payment.zarinpal.callback');
+    Route::post('/omidpay/callback', 'callbackOmidPay')->name('payment.omidpay.callback');
 });
+
 
 Route::controller(BankServiceRequestController::class)->middleware('auth:sanctum')
     ->prefix('bank-service-request')->group(function () {

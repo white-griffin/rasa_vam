@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Enums\OrderStatuses;
+use App\Enums\PaymentGateways;
 use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
@@ -70,17 +71,19 @@ class OrderController extends Controller
 
             $order = Order::query()->create([
                 'user_id' => auth()->id(),
-                'order_number' => 'ORD-' . Str::upper(Str::random(10)),
+                'order_number' => $this->generateOrderNumber(),
                 'orderable_type' => get_class($product),
                 'orderable_id' => $product->id,
                 'order_status' => OrderStatuses::PENDING->value,
                 'total_amount' => $price
             ]);
-            $payment = (new PaymentController())->sendToGateway($order);
+            $payment = (new PaymentController())->sendToGateway($order,PaymentGateways::OMIDPAY);
+
             if ($payment['success']){
                 DB::commit();
                 return ApiResponse::success('انتقال به درگاه . . .',[
-                    'pay_url' => $payment['url']
+                    'pay_url' => $payment['url'],
+                    'token' => $payment['token'],
                 ]);
             }else{
                 DB::rollback();
@@ -95,8 +98,12 @@ class OrderController extends Controller
             return ApiResponse::Fail(404, 'محصول یافت نشد');
         } catch (\Throwable $e) {
             DB::rollback();
-
             return ApiResponse::Fail(500, 'خطا در ایجاد سفارش');
         }
+    }
+
+    private function generateOrderNumber(): string
+    {
+        return 'ORD-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
     }
 }

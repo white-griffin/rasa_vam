@@ -135,13 +135,20 @@ class BankServicesForm
                                 'radio' => 'رادیو باتن',
                                 'checkbox' => 'چک‌باکس',
                                 'date' => 'تاریخ',
+                                'calculation' => 'محاسبه',
                             ])
                             ->required()
-                            ->reactive(),
+                            ->reactive()
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state === 'calculation') {
+                                    $set('name', 'formula');
+                                }
+                            }),
 
                         TextInput::make('name')
                             ->label('نام فیلد')
                             ->required()
+                            ->visible(fn ($get) => $get('type') !== 'calculation')
                             ->helperText('نام فیلد در دیتابیس (مثلا: first_name)'),
 
                         TextInput::make('label')
@@ -160,8 +167,15 @@ class BankServicesForm
                             ->rows(4)
                             ->visible(fn ($get) => in_array($get('type'), ['select', 'radio', 'checkbox'])),
 
+                        TextInput::make('formula')
+                            ->label('فرمول محاسبه')
+                            ->helperText('مثال: price * quantity')
+                            ->visible(fn ($get) => $get('type') === 'calculation')
+                            ->required(fn ($get) => $get('type') === 'calculation'),
+
                         Select::make('required')
                             ->label('اجباری')
+                            ->visible(fn ($get) => $get('type') !== 'calculation')
                             ->options([
                                 true => 'بله',
                                 false => 'خیر',

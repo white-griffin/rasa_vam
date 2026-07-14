@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\BankServiceRequestStatuses;
 use App\Models\BankServiceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -17,7 +18,7 @@ class BankServiceRequestResource extends JsonResource
             'request_title' => $this->bank_service_price_title,
             'request_amount' => $this->bank_service_price_amount,
             'additional_data' => $this->additional_data,
-            'status' => $this->status
+            'status' => BankServiceRequestStatuses::label($this->status)
         ];
     }
 }
