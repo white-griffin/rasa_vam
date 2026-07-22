@@ -107,7 +107,7 @@ class PaymentController extends Controller
                 $paymentRecord->order->orderable->purchaseCompleted();
 
                 DB::commit();
-                return view('user.payments.success-pay');
+                return redirect('https://rasavam.com/payment/success');
             }
 
             if ($payment->alreadyVerified()) {
@@ -123,12 +123,12 @@ class PaymentController extends Controller
                     'payment_status' => OrderStatuses::FAILED->value,
                 ]);
                 DB::commit();
-                return view('user.payments.failed-pay');
+                return redirect('https://rasavam.com/payment/failed');
             }
             DB::commit();
         }catch (Exception $e){
             DB::rollBack();
-            return view('user.payments.failed-pay');
+            return redirect('https://rasavam.com/payment/failed');
         }
 
     }
@@ -245,10 +245,10 @@ class PaymentController extends Controller
                         default => throw new \InvalidArgumentException('محصول پشتیبانی نمی‌شود'),
                     };
 
-                    return view('user.payments.success-pay');
+                    return redirect('https://rasavam.com/payment/success');
                 }else{
 
-                    return view('user.payments.failed-pay');
+                    return redirect('https://rasavam.com/payment/failed');
                 }
             }else{
                 $payment->update([
@@ -256,7 +256,7 @@ class PaymentController extends Controller
                 ]);
 
                 DB::commit();
-                return view('user.payments.failed-pay');
+                return redirect('https://rasavam.com/payment/failed');
 
             }
         }catch (\Exception $e){
