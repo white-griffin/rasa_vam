@@ -102,7 +102,7 @@ Route::controller(PaymentController::class)->prefix('payment')->group(function (
 
 Route::controller(CategoryController::class)->prefix('categories')->group(function () {
     Route::get('/', 'index');
-    Route::get('/{category}', 'show');
+    Route::get('/{category_slug}', 'show');
 });
 
 Route::controller(BankServiceRequestController::class)->middleware('auth:sanctum')

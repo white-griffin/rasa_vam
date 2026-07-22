@@ -32,11 +32,12 @@ class CategoryController extends Controller
         }
     }
 
-    public function show(Category $category): JsonResponse
+    public function show($category_slug): JsonResponse
     {
         try {
             $categoryData = CategoryResource::make(
-                $category
+                Category::query()
+                    ->where('slug',$category_slug)
                     ->with(['children','services'])
                     ->first()
             );
