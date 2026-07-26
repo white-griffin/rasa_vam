@@ -43,7 +43,8 @@ class BankServiceRequestController extends Controller
         DB::beginTransaction();
         try {
             $request = BankServiceRequest::query()
-                ->create($this->requestData());
+                ->create($this->requestData())
+                ->refresh();
             DB::commit();
             return ApiResponse::success('درخواست ثبت شده و در انتظار پرداخت',BankServiceRequestResource::make($request));
         }catch (\Exception $exception){

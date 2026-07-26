@@ -49,7 +49,7 @@ class OrderController extends Controller
 
     public function create(){
         $validated = \request()->validate([
-            'type' => ['required', 'in:plan,loan_ad,bank_service_request'],
+            'type' => ['required', 'in:plan,loan_ad,bank_service'],
             'id'   => ['required', 'integer'],
         ]);
         DB::beginTransaction();
@@ -60,13 +60,13 @@ class OrderController extends Controller
             $product = match ($type) {
                 'plan' => Plan::query()->findOrFail($id),
                 'loan_ad' => LoanAd::query()->findOrFail($id),
-                'bank_service_request' => BankServiceRequest::query()->findOrFail($id),
+                'bank_service' => BankServiceRequest::query()->findOrFail($id),
             };
 
             $price = match ($type) {
                 'plan' => $product->price,
                 'loan_ad' => 5000,
-                'bank_service_request' => $product->bank_service_price_amount,
+                'bank_service' => $product->bank_service_price_amount,
             };
 
             $order = Order::query()->create([
