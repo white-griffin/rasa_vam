@@ -26,7 +26,6 @@ class BankServicesResource extends Resource
 
     protected static ?string $modelLabel = 'خدمت بانکی';
 
-    protected static ?int $navigationSort = 3;
     protected static string|BackedEnum|null $navigationIcon = Heroicon::BuildingLibrary;
 
 
