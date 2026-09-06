@@ -147,7 +147,7 @@ class PaymentController extends Controller
             "ReserveNum" => $order->order_number,
             "MerchantId" => "411523672",
             "TerminalId" => "41856066",
-            "Amount" => $order->total_amount,
+            "Amount" => $order->total_amount *10,
             "ProductId" => "", // در صورت نیاز پر شود
             "GoodsReferenceID" => "987654",
             "MerchatGoodReferenceID" => "111",

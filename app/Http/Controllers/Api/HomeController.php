@@ -30,7 +30,7 @@ class HomeController extends Controller
     private function getBankServices()
     {
         return BankServiceCardResource::collection(
-            BankService::where('activity_status',ActivityStatus::ACTIVE->value)->get()
+            BankService::where('activity_status',ActivityStatus::ACTIVE->value)->take(7)->get()
         );
     }
 

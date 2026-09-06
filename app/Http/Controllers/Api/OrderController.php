@@ -65,7 +65,7 @@ class OrderController extends Controller
 
             $price = match ($type) {
                 'plan' => $product->price,
-                'loan_ad' => 5000,
+                'loan_ad' => 50000,
                 'bank_service' => $product->bank_service_price_amount,
             };
 
